@@ -1,0 +1,8 @@
+[Desktop Entry]
+Type=Application
+Name=GrumpyDove
+Comment=Mail client
+Exec=grumpydove
+Icon=grumpydove
+Categories=Network;Email;
+StartupWMClass=grumpydove

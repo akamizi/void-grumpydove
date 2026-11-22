@@ -1,0 +1,40 @@
+# Template file for 'gprbuild'
+# Void has the Ada compiler (gcc-ada) but not gprbuild, which GrumpyDove
+# needs to build. gprbuild is bootstrapped from AdaCore's sources, with
+# XML/Ada and the gprconfig knowledge base compiled in (not installed).
+pkgname=gprbuild
+version=25.0.0
+revision=1
+archs="x86_64*"
+hostmakedepends="gcc-ada"
+depends="gcc-ada"
+short_desc="AdaCore multi-language build tool (bootstrapped with XML/Ada)"
+maintainer="Maurizio Cavalletti <maurizio@akabit.it>"
+license="GPL-3.0-or-later WITH GCC-exception-3.1"
+homepage="https://github.com/AdaCore/gprbuild"
+distfiles="https://github.com/AdaCore/gprbuild/archive/refs/tags/v${version}.tar.gz>gprbuild-${version}.tar.gz
+ https://github.com/AdaCore/xmlada/archive/refs/tags/v${version}.tar.gz>xmlada-${version}.tar.gz
+ https://github.com/AdaCore/gprconfig_kb/archive/refs/tags/v${version}.tar.gz>gprconfig_kb-${version}.tar.gz"
+checksum="d12f94c1ec0b6e219f6b162f71f57129d22426e7798092f5f85b9ec2cc818bf1
+ dbb5984a0931311c7a787a679ef4cfaeeedd357474a585dc170140ef2251dcca
+ 802e6d38a3b110897924a9c16e143cb86360f2dde94bb5b9144c7c391e37b121"
+wrksrc="gprbuild-${version}"
+skip_extraction="xmlada-${version}.tar.gz gprconfig_kb-${version}.tar.gz"
+nocross=yes
+
+post_extract() {
+	vsrcextract -C xmlada xmlada-${version}.tar.gz
+	vsrcextract -C gprconfig_kb gprconfig_kb-${version}.tar.gz
+}
+
+do_build() {
+	./bootstrap.sh --with-xmlada="${wrksrc}/xmlada" \
+		--with-kb="${wrksrc}/gprconfig_kb" --prefix=/usr --build
+}
+
+do_install() {
+	DESTDIR="${DESTDIR}" ./bootstrap.sh --with-xmlada="${wrksrc}/xmlada" \
+		--with-kb="${wrksrc}/gprconfig_kb" --prefix=/usr --install
+	vlicense COPYING3
+	vlicense COPYING.RUNTIME
+}

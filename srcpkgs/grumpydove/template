@@ -1,0 +1,40 @@
+# Template file for 'grumpydove'
+pkgname=grumpydove
+version=1.0.0_beta11
+revision=1
+archs="x86_64*"
+wrksrc=grumpydove
+hostmakedepends="gcc-ada gprbuild"
+makedepends="qt6-base-devel libetpan-devel gpgme-devel libcurl-devel
+ gnutls-devel libxml2-devel hunspell-devel jansson-devel"
+depends="gnupg bogofilter ca-certificates"
+short_desc="Mail client in the manner of Eudora Pro, written in Ada and Qt"
+maintainer="Maurizio Cavalletti <maurizio@akabit.it>"
+license="EUPL-1.2"
+homepage="https://git.keinpfusch.net/loweel/grumpydove"
+# Upstream tags are v1.0.0-beta11; xbps wants an underscore (1.0.0_beta11).
+distfiles="${homepage}/archive/v${version/_/-}.tar.gz>grumpydove-${version}.tar.gz"
+checksum=8dd810034807b51641d1a19a740292b3baba60003f75b7579811d148ae42aa51
+nocross=yes
+
+do_build() {
+	gprbuild -P grumpydove.gpr -j${XBPS_MAKEJOBS} -p \
+		-XQT_INCLUDE=/usr/include/qt6
+}
+
+do_install() {
+	# The program looks for its icons in ../icons from its own directory.
+	vinstall bin/grumpydove 755 usr/lib/grumpydove/bin
+	for f in icons/*.bmp icons/Gear.png; do
+		vinstall "$f" 644 usr/lib/grumpydove/icons
+	done
+	vmkdir usr/bin
+	ln -s ../lib/grumpydove/bin/grumpydove "${DESTDIR}/usr/bin/grumpydove"
+	vinstall icons/grumpydove.png 644 usr/share/icons/hicolor/512x512/apps
+	vinstall "${FILESDIR}/grumpydove.desktop" 644 usr/share/applications
+
+	vlicense LICENSE.md
+	vlicense icons/LICENSE LICENSE.icons
+	vlicense third_party/litehtml/LICENSE LICENSE.litehtml
+	vlicense third_party/litehtml/src/gumbo/LICENSE LICENSE.gumbo
+}
