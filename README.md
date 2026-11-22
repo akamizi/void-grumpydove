@@ -24,7 +24,7 @@ It must match the one published below.
 Signing key fingerprint:
 
 ```
-(to be filled in after the first signed build)
+68:19:1d:b8:8f:ce:c4:d7:99:2a:ac:59:26:b6:bf:8f
 ```
 
 ## Contents
