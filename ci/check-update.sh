@@ -2,7 +2,8 @@
 # Bump srcpkgs/grumpydove/template to the newest upstream tag, if newer.
 # Prints "updated=<version>" or "updated=" for $GITHUB_OUTPUT.
 #
-# Upstream tags look like v1.0.0-beta11; the xbps version is 1.0.0_beta11.
+# Upstream tags look like v1.0.0-beta11; the xbps version is 1.0.0beta11
+# (xbps-src allows neither "-" nor "_" in a version).
 # For comparing, both become 1.0.0~beta11, which sort -V puts before 1.0.0.
 set -euo pipefail
 
@@ -14,12 +15,12 @@ latest_tag=$(git ls-remote --tags --refs "$UPSTREAM" 'v*' \
 	| sed 's/^v//; s/-/~/' | sort -V | tail -n1)
 [ -n "$latest_tag" ] || { echo "no upstream tag found" >&2; exit 1; }
 
-latest=${latest_tag//\~/_}           # 1.0.0_beta11, the xbps version
+latest=${latest_tag//\~/}            # 1.0.0beta11, the xbps version
 upstream_tag=v${latest_tag//\~/-}     # v1.0.0-beta11, the git tag
 current=$(sed -n 's/^version=//p' "$TEMPLATE")
 
 if [ "$latest" = "$current" ] \
-	|| [ "$(printf '%s\n%s\n' "${current//_/\~}" "$latest_tag" | sort -V | tail -n1)" != "$latest_tag" ]; then
+	|| [ "$(printf '%s\n%s\n' "$(sed -E 's/([0-9])(alpha|beta|rc)/\1~\2/' <<<"$current")" "$latest_tag" | sort -V | tail -n1)" != "$latest_tag" ]; then
 	echo "grumpydove $current is up to date (upstream: $latest)" >&2
 	echo "updated="
 	exit 0

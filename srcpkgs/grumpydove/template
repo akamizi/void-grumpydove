@@ -1,6 +1,6 @@
 # Template file for 'grumpydove'
 pkgname=grumpydove
-version=1.0.0_beta11
+version=1.0.0beta11
 revision=1
 archs="x86_64*"
 wrksrc=grumpydove
@@ -12,8 +12,8 @@ short_desc="Mail client in the manner of Eudora Pro, written in Ada and Qt"
 maintainer="Maurizio Cavalletti <maurizio@akabit.it>"
 license="EUPL-1.2"
 homepage="https://git.keinpfusch.net/loweel/grumpydove"
-# Upstream tags are v1.0.0-beta11; xbps wants an underscore (1.0.0_beta11).
-distfiles="${homepage}/archive/v${version/_/-}.tar.gz>grumpydove-${version}.tar.gz"
+# Upstream tags are v1.0.0-beta11; xbps-src forbids "-" and "_" in versions, so 1.0.0beta11.
+distfiles="${homepage}/archive/v${version/beta/-beta}.tar.gz>grumpydove-${version}.tar.gz"
 checksum=8dd810034807b51641d1a19a740292b3baba60003f75b7579811d148ae42aa51
 nocross=yes
 

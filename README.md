@@ -36,8 +36,8 @@ Signing key fingerprint:
 
 Everything else comes from the official Void repositories.
 
-Upstream versions such as `1.0.0-beta11` become `1.0.0_beta11` in xbps,
-which sorts before `1.0.0` and after `1.0.0_beta10`.
+Upstream versions such as `1.0.0-beta11` become `1.0.0beta11` in xbps,
+which sorts before `1.0.0` and after `1.0.0beta10`.
 
 ## Maintenance
 
