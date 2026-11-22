@@ -25,7 +25,9 @@ do_build() {
 do_install() {
 	# The program looks for its icons in ../icons from its own directory.
 	vinstall bin/grumpydove 755 usr/lib/grumpydove/bin
+	# Gear.png arrived after beta11: install it only where the tag has it.
 	for f in icons/*.bmp icons/Gear.png; do
+		[ -f "$f" ] || continue
 		vinstall "$f" 644 usr/lib/grumpydove/icons
 	done
 	vmkdir usr/bin
