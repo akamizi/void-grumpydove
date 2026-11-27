@@ -1,6 +1,6 @@
 # Template file for 'grumpydove'
 pkgname=grumpydove
-version=1.0.0beta12
+version=1.0.0beta13
 revision=1
 archs="x86_64*"
 wrksrc=grumpydove
@@ -14,7 +14,7 @@ license="EUPL-1.2"
 homepage="https://git.keinpfusch.net/loweel/grumpydove"
 # Upstream tags are v1.0.0-beta11; xbps-src forbids "-" and "_" in versions, so 1.0.0beta11.
 distfiles="${homepage}/archive/v${version/beta/-beta}.tar.gz>grumpydove-${version}.tar.gz"
-checksum=dbe8116d72a599b436139f57358a695e7298ffa17d6d96d7a7d251e3c35ace09
+checksum=3b0b6efce46dadac210fd83f45a5310fe704420be7c25f2a24e733d45b56c7b8
 nocross=yes
 
 do_build() {
