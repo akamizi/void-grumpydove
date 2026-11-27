@@ -21,28 +21,22 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  check:
-    name: Check upstream release
+  build:
+    name: Build
     runs-on: ubuntu-latest
     outputs:
-      updated: ${{ steps.bump.outputs.updated }}
       build: ${{ steps.decide.outputs.build }}
     steps:
       - uses: actions/checkout@v4
 
+      # The bump stays in the working tree and is committed only once the
+      # packages have built: a release that fails to build is retried (and
+      # fails visibly) on every scheduled run until the template is fixed.
       - name: Bump template to latest release
         id: bump
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: ci/check-update.sh >> "$GITHUB_OUTPUT"
-
-      - name: Commit update
-        if: steps.bump.outputs.updated != ''
-        run: |
-          git config user.name 'github-actions[bot]'
-          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
-          git commit -am "grumpydove: update to ${{ steps.bump.outputs.updated }}"
-          git push
 
       - name: Decide whether to build
         id: decide
@@ -50,20 +44,12 @@ jobs:
           if [ "${{ github.event_name }}" != schedule ] || [ -n "${{ steps.bump.outputs.updated }}" ]; then
             echo build=true >> "$GITHUB_OUTPUT"
           else
+            echo "Nothing new upstream, skipping build."
             echo build=false >> "$GITHUB_OUTPUT"
           fi
 
-  build:
-    name: Build and publish
-    needs: check
-    if: needs.check.outputs.build == 'true'
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          ref: main
-
       - name: Build packages and repository
+        if: steps.decide.outputs.build == 'true'
         env:
           XBPS_PRIVKEY: ${{ secrets.XBPS_PRIVKEY }}
         run: |
@@ -72,13 +58,25 @@ jobs:
             ghcr.io/void-linux/void-glibc-full:latest \
             sh /work/ci/entry.sh
 
+      - name: Commit update
+        if: steps.decide.outputs.build == 'true' && steps.bump.outputs.updated != ''
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git commit -m "grumpydove: update to ${{ steps.bump.outputs.updated }}" -- srcpkgs/grumpydove/template
+          git push
+
       - uses: actions/upload-pages-artifact@v3
+        if: steps.decide.outputs.build == 'true'
         with:
           path: public
 
+  # Separate job: deploy-pages does not always see an artifact uploaded
+  # earlier in the same job.
   deploy:
     name: Deploy to Pages
     needs: build
+    if: needs.build.outputs.build == 'true'
     runs-on: ubuntu-latest
     environment:
       name: github-pages
