@@ -1,6 +1,6 @@
 # Template file for 'grumpydove'
 pkgname=grumpydove
-version=1.0.0beta14
+version=1.0.0rc12
 revision=1
 archs="x86_64*"
 wrksrc=grumpydove
@@ -18,7 +18,7 @@ _tag=${version/alpha/-alpha}
 _tag=${_tag/beta/-beta}
 _tag=${_tag/rc/-rc}
 distfiles="${homepage}/archive/v${_tag}.tar.gz>grumpydove-${version}.tar.gz"
-checksum=ffb57552c220b194bab3320f019cc59da4a7e3c84f07e70d1ba40aabdfe9eaf3
+checksum=9990263c2956837c2dbaaa84cf99878611f0c490f48a4b8fa6cdaa16cf1f0750
 nocross=yes
 
 do_build() {
