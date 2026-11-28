@@ -27,7 +27,11 @@ jobs:
     outputs:
       build: ${{ steps.decide.outputs.build }}
     steps:
+      # The tip of main, not the commit that triggered the run: a run that
+      # waited behind another (concurrency) sees the bump that one pushed.
       - uses: actions/checkout@v4
+        with:
+          ref: main
 
       # The bump stays in the working tree and is committed only once the
       # packages have built: a release that fails to build is retried (and
